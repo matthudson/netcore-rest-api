@@ -13,5 +13,24 @@ namespace NetCoreRestApi.Data
         public DbSet<CustomerRegistration> CustomerRegistrations { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Policy> Policies { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<CustomerRegistration>()
+                .Property(s => s.Created)
+                .HasDefaultValueSql("GETDATE()");
+
+            modelBuilder.Entity<Customer>()
+                .HasIndex(b => b.OnlineReference)
+                    .IsUnique();
+
+            modelBuilder.Entity<Customer>()
+                .Property(s => s.Created)
+                .HasDefaultValueSql("GETDATE()");
+
+            modelBuilder.Entity<Policy>()
+                .Property(s => s.Created)
+                .HasDefaultValueSql("GETDATE()");
+        }
     }
 }

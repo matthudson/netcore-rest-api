@@ -16,6 +16,11 @@ namespace NetCoreRestApi.Auth.Dtos
         [StringLength(50, MinimumLength = 3)]
         public string Surname { get; set; }
 
+        // Required; Validate 2[A-Z]-6[0-9]
+        [Required]
+        [RegularExpression("^[A-Z]{2}-[0-9]{6}$")]
+        public string PolicyReferenceNumber { get; set; }
+
         // Optional; Validate 4+[alphanum]@2+[alphanum].co(m/.uk)
         [RegularExpression("^[a-zA-Z0-9]{4,}@[a-zA-Z0-9]{2,}\\.co(m|\\.uk)$")]
         public string Email { get; set; }
