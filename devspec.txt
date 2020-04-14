@@ -1,0 +1,29 @@
+
+ ## API Challenge
+ 
+  - NET CORE
+  - One Endpoint
+  - No Auth
+  
+  * Validate the customers information and return a unique online Customer ID.
+  * Customer ID should be a randomly generated integer. UNIQUE
+  * submitted registration data should be stored, along with the unique online customer reference number.
+
+  # Req registration data:
+  
+1) Policy holder’s first name
+2) Policy holder’s surname
+3) Policy Reference number
+
+4) EITHER
+   the policy holders DOB
+   OR
+   the policy holder’s email
+ 
+  # Req validation:
+  
+1) F/L name: 3-50chars
+2) Ref Format: 2[AlphaCaps]-6[int]
+	- "XX-999999"
+3) #IF# supplied; DOB >= 18 yrs
+4) Email: 4[AlphaNumeric]@2[AlphaNumeric].(com/co.uk)
