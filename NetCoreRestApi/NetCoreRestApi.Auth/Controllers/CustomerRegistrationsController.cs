@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NetCoreRestApi.Auth.Dtos;
 using NetCoreRestApi.Data;
@@ -29,19 +28,40 @@ namespace NetCoreRestApi.Auth.Controllers
         [HttpPost]
         public async Task<int> PostCustomerRegistration(CustomerRegistrationDto customerRegistrationDto)
         {
-            var customerRegistration =
-                new CustomerRegistration {
-                    Forename = customerRegistrationDto.Forename,
-                    Surname = customerRegistrationDto.Surname,
-                    Email = customerRegistrationDto.Email,
-                    DateOfBirth = customerRegistrationDto.DateOfBirth,
-                    Created = DateTime.Now
-                };
+            try
+            {
+                var customerRegistration =
+                    new CustomerRegistration {
+                        Forename = customerRegistrationDto.Forename,
+                        Surname = customerRegistrationDto.Surname,
+                        PolicyReferenceNumber = customerRegistrationDto.PolicyReferenceNumber,
+                        Email = customerRegistrationDto.Email,
+                        DateOfBirth = customerRegistrationDto.DateOfBirth
+                    };
 
-            _context.CustomerRegistrations.Add(customerRegistration);
-            await _context.SaveChangesAsync();
+                _context.CustomerRegistrations.Add(customerRegistration);
+                await _context.SaveChangesAsync();
 
-            return customerRegistration.CustomerRegistrationId; // todo: online reference
+                var customer =
+                    new Customer {
+                        Forename = customerRegistration.Forename,
+                        Surname = customerRegistration.Surname,
+                        Email = customerRegistration.Email,
+                        DateOfBirth = customerRegistration.DateOfBirth,
+                        CustomerRegistration = customerRegistration,
+                        Policies = new List<Policy> { new Policy { ReferenceNumber = customerRegistration.PolicyReferenceNumber } }
+                    };
+
+                _context.Customers.Add(customer);
+                await _context.SaveChangesAsync();
+
+                return customerRegistration.CustomerRegistrationId; // todo: online reference
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error occurred whilst registering the customer");
+                throw;
+            }
         }
     }
 }
