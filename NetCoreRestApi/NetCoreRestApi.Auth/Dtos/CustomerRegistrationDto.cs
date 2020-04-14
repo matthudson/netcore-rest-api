@@ -22,6 +22,6 @@ namespace NetCoreRestApi.Auth.Dtos
 
         // Optional; Validate >= 18yrs
         [DateMustBe18YearsOld]
-        public DateTime DateOfBirth { get; set; }
+        public DateTime? DateOfBirth { get; set; }
     }
 }
