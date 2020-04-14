@@ -18,19 +18,23 @@ namespace NetCoreRestApi.Data
         {
             modelBuilder.Entity<CustomerRegistration>()
                 .Property(s => s.Created)
-                .HasDefaultValueSql("GETDATE()");
+                    .HasDefaultValueSql("GETDATE()");
 
             modelBuilder.Entity<Customer>()
                 .HasIndex(b => b.OnlineReference)
                     .IsUnique();
+            
+            modelBuilder.Entity<Customer>()
+                .Property(s => s.OnlineReference)
+                .HasDefaultValueSql("ABS(CHECKSUM(NEWID())) % 1000000 + 1");
 
             modelBuilder.Entity<Customer>()
                 .Property(s => s.Created)
-                .HasDefaultValueSql("GETDATE()");
+                    .HasDefaultValueSql("GETDATE()");
 
             modelBuilder.Entity<Policy>()
                 .Property(s => s.Created)
-                .HasDefaultValueSql("GETDATE()");
+                    .HasDefaultValueSql("GETDATE()");
         }
     }
 }

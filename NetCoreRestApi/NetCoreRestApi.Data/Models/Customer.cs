@@ -7,7 +7,6 @@ namespace NetCoreRestApi.Data.Models
     {
         public int CustomerId { get; set; }
 
-        // TODO: RANDOM
         public int OnlineReference { get; set; }
         public string Forename { get; set; }
         public string Surname { get; set; }

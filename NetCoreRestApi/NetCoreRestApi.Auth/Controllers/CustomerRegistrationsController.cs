@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -26,7 +27,7 @@ namespace NetCoreRestApi.Auth.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<int> PostCustomerRegistration(CustomerRegistrationDto customerRegistrationDto)
+        public async Task<int?> PostCustomerRegistration(CustomerRegistrationDto customerRegistrationDto)
         {
             try
             {
@@ -42,20 +43,28 @@ namespace NetCoreRestApi.Auth.Controllers
                 _context.CustomerRegistrations.Add(customerRegistration);
                 await _context.SaveChangesAsync();
 
-                var customer =
-                    new Customer {
-                        Forename = customerRegistration.Forename,
-                        Surname = customerRegistration.Surname,
-                        Email = customerRegistration.Email,
-                        DateOfBirth = customerRegistration.DateOfBirth,
-                        CustomerRegistration = customerRegistration,
-                        Policies = new List<Policy> { new Policy { ReferenceNumber = customerRegistration.PolicyReferenceNumber } }
-                    };
+                var attempts = 10;
+                while (attempts-- > 0)
+                {
+                    var customer =
+                        new Customer {
+                            Forename = customerRegistration.Forename,
+                            Surname = customerRegistration.Surname,
+                            Email = customerRegistration.Email,
+                            DateOfBirth = customerRegistration.DateOfBirth,
+                            CustomerRegistration = customerRegistration,
+                            Policies = new List<Policy> { new Policy { ReferenceNumber = customerRegistration.PolicyReferenceNumber } }
+                        };
 
-                _context.Customers.Add(customer);
-                await _context.SaveChangesAsync();
+                    _context.Customers.Add(customer);
+                    
+                    if (await _context.SaveChangesAsync() > 0)
+                        return customer.OnlineReference;
+                }
 
-                return customerRegistration.CustomerRegistrationId; // todo: online reference
+                HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+                return null;
             }
             catch (Exception e)
             {
